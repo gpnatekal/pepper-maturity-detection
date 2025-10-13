@@ -1,0 +1,29 @@
+
+<div class="container pt-4">
+    <h2 class="mb-4 text-center">Maturity Detection</h2>
+    <div class="upload-section mb-4 d-flex gap-3 align-items-end">
+      <div class="flex-grow-1">
+        <label for="imageUpload">Upload Image</label>
+        <input class="form-control" name="imageUpload" id="imageUpload" type="file" accept="image/*" (change)="onFileSelected($event)" />
+      </div>
+      <button (click)="uploadImage()" class="btn btn-primary" [disabled]="!selectedFile">Process Image</button>
+    </div>
+    <div *ngIf="isLoading" class="d-flex align-items-center justify-content-center mb-4">
+  <div class="spinner-border text-primary"  style="width: 3rem; height: 3rem;" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+    </div>
+    <div class="results row" *ngIf="results">
+      <div class="col-md-6 image-container">
+        <h4 class="mb-3">Original Image with Annotations</h4>
+        <img [src]="results.original" class="img-fluid mb-4" alt="Original Image" />
+      </div>
+      <div class="col-md-6 image-container">
+        <h4 class="mb-3">Depth Map</h4>
+        <img [src]="results.depth" class="img-fluid mb-3" alt="Depth Map" />
+        <div *ngIf="detections && detections.length > 0">
+          <p *ngFor="let item of detections">{{item}}</p>
+        </div>
+      </div>
+    </div>
+  </div>
