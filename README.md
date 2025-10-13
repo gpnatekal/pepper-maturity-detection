@@ -1,6 +1,8 @@
 # 🌿 Pepper Maturity Detection
 
-An **AI-based system** for detecting pepper maturity, predicting harvest readiness, and providing related analytics.
+An **AI-powered full-stack system** for detecting pepper maturity, predicting harvest readiness, and providing price forecasting with intelligent recommendations.
+
+This project combines **computer vision (YOLO + MiDaS)**, **autoencoders**, and **LSTM-based time series forecasting**, integrated through an **Angular frontend** and a **Python (Flask/FastAPI) backend**.
 
 ---
 
@@ -8,133 +10,241 @@ An **AI-based system** for detecting pepper maturity, predicting harvest readine
 
 ```
 pepper-maturity-detection/
-├── angular/        # Angular frontend application
-└── python/         # Python backend (models, APIs)
+│
+├── angular/                # Frontend (Angular application)
+│   ├── src/
+│   ├── package.json
+│   └── angular.json
+;; │git reset --mixed HEAD~2
+
+├── python/                 # Backend (Python + AI Models)
+│   ├── main.py             # Main backend entry point
+│   ├── main2.py            # Flask API (YOLO, MiDaS, LSTM)
+│   ├── pepper_lstm_scraper_recommender.py
+│   ├── requirements.txt
+│   └── models/             # Place downloaded model files here
+│
+└── README.md
 ```
-
-### `angular/`
-Contains the **frontend** code (Angular application).
-
-To set up:
-```bash
-cd angular
-npm install
-```
-
-Start the frontend (development):
-```bash
-cd angular
-ng serve
-# or
-npm start
-```
-Open your browser at: `http://localhost:4200`
-
----
-
-### `python/`
-Contains the **backend** code (Python + AI models).
-
-1. Download the required models from the provided Google Drive and place them inside the `python/` folder.  
-2. Install Python dependencies:
-   ```bash
-   cd python
-   pip install -r requirements.txt
-   ```
-3. Run the backend:
-   ```bash
-   python main.py
-   ```
-By default the backend runs on `http://0.0.0.0:5000` (Flask) or `http://127.0.0.1:8000` (FastAPI / uvicorn) depending on which server you use. Check `main.py` for the actual host/port.
 
 ---
 
 ## ⚙️ Requirements
 
-- **Frontend:** Node.js (>=14), Angular CLI  
-- **Backend:** Python 3.8+  
-- **Key Python libraries:** (listed in `python/requirements.txt`)  
-  - fastapi, uvicorn, SQLAlchemy, pydantic, pandas, requests, beautifulsoup4, python-dotenv, apscheduler, numpy, opencv-python, torch, torchvision, pillow, ultralytics, flask, flask-cors, timm, tensorflow
+### 🧩 Frontend
+- **Node.js** (v16+ recommended)
+- **Angular CLI**
+
+### 🧠 Backend
+- **Python 3.8+**
+- Libraries listed in [`requirements.txt`](python/requirements.txt)
 
 ---
 
-## 🔐 SSH & GitHub (Quick Setup)
+## 🚀 Setup & Run Instructions
 
-If you plan to push/pull from GitHub using SSH (Windows 11), follow these steps:
+### 1️⃣ Clone the Repository
 
-1. Open PowerShell or Git Bash.
-2. Generate a new SSH key:
-   ```bash
-   ssh-keygen -t ed25519 -C "your_email@example.com"
-   ```
-3. Start the ssh-agent and add the key:
-   - PowerShell:
-     ```powershell
-     Start-Service ssh-agent
-     ssh-add $env:USERPROFILE\.ssh\id_ed25519
-     ```
-   - Git Bash:
-     ```bash
-     eval "$(ssh-agent -s)"
-     ssh-add ~/.ssh/id_ed25519
-     ```
-4. Copy the public key:
-   ```bash
-   cat ~/.ssh/id_ed25519.pub
-   ```
-   (or `Get-Content $env:USERPROFILE\.ssh\id_ed25519.pub` in PowerShell)
-5. Add the key to GitHub: **Settings → SSH and GPG keys → New SSH key**. Paste the key and save.
-6. Test:
-   ```bash
-   ssh -T git@github.com
-   ```
+```bash
+git clone https://github.com/yourusername/pepper-maturity-detection.git
+cd pepper-maturity-detection
+```
 
 ---
 
-## 🚀 How to Use (End-to-End)
+### 2️⃣ Set Up the Backend
 
-1. Ensure models are placed in `python/` as described.
-2. Start the backend:
-   ```bash
-   cd python
-   python main.py
-   ```
-3. Start the frontend:
-   ```bash
-   cd angular
-   ng serve
-   ```
-4. Use the Angular UI to upload images (for pepper maturity detection) and to request price predictions (if integrated).
+```bash
+cd python
+pip install -r requirements.txt
+```
 
----
+#### 🔽 Download Required Models
+Download the pre-trained AI models from Google Drive:
 
-## 🧠 Features
+👉 [Download Models from Google Drive](https://drive.google.com/drive/folders/1GXd1wI6CuSky2f_0qecLd4xyl2YOuIMj?usp=drive_link)
 
-- Pepper maturity classification using YOLO + MiDaS depth estimation
-- Pepper price forecasting using an LSTM-based time series model
-- Recommendation engine suggesting BUY / HOLD / SELL based on forecast
-- Full-stack integration (Angular frontend + Python backend)
+After download, place all `.pt`, `.h5`, and related model files inside the `python/` folder.
 
----
+#### ▶️ Run the Backend
 
-## 🛠️ Development Tips
+```bash
+python main.py
+```
 
-- Keep heavy ML models and weights in the `python/` folder and avoid committing large binaries to Git — use Git LFS or host models externally (Google Drive) and download during setup.
-- For production deployment, consider:
-- Serving the ML model via a separate worker or microservice.
-- Using GPU-enabled instances for fast inference (CUDA).
-  - Caching scraped data and predictions to avoid re-training on every request.
-  - Using HTTPS and restricting CORS to your frontend domain.
+Backend will start at:
+```
+http://localhost:5000
+```
 
 ---
 
-## 📝 License & Attribution
+### 3️⃣ Set Up the Frontend
 
-Add a license file (e.g., `LICENSE`) if you intend to open-source the project. Cite any external models and datasets you use per their licenses.
+```bash
+cd angular
+npm install
+```
+
+#### ▶️ Run the Angular App
+
+```bash
+ng serve
+```
+
+Frontend will start at:
+```
+http://localhost:4200
+```
 
 ---
 
-If you want, I can:
-- Add badges, screenshots, or a "Getting Started" checklist.
-- Create a `CONTRIBUTING.md` or `LICENSE` file.
-- Generate a downloadable `README.md` file for you now.
+## 🌐 Access the Application
+
+Once both servers are running:
+
+🔗 Open in your browser:  
+**[http://localhost:4200](http://localhost:4200)**
+
+The Angular frontend communicates with the Flask backend (`http://localhost:5000`) for predictions and analytics.
+
+---
+
+## 🧩 Features
+
+### 🔍 1. Pepper Maturity Detection
+- Uses **YOLOv8** and **MiDaS** for depth-based maturity analysis.  
+- Detects peppercorn categories (P1–P5).  
+- Autoencoder-powered P5 (over-mature) classification.
+
+### 🌡️ 2. Depth & Disease Analytics
+- **MiDaS** model estimates relative depth of detected peppercorns.  
+- **CNN classifier** detects common pepper diseases (e.g., footrot, pollu disease, slow decline).
+
+### 💹 3. Price Forecasting & Recommendations
+- **LSTM-based time-series forecasting** for pepper prices.  
+- Predicts next 7 days of prices.  
+- Provides actionable recommendations:
+  - 🟢 *BUY NOW (expected rise)*
+  - 🔴 *WAIT / SELL (expected drop)*
+  - 🟡 *HOLD (sideways)*
+
+### 🔄 4. Full-stack Integration
+- Angular Reactive Forms for user input.  
+- Flask/FastAPI backend serving AI predictions via REST API.  
+- Real-time visualization of predicted trends and summaries.
+
+---
+
+## 🧱 Key Technologies
+
+| Layer | Technology |
+|-------|-------------|
+| Frontend | Angular 17+, Bootstrap 5 |
+| Backend | Python 3.8+, Flask / FastAPI |
+| AI Models | YOLOv8, MiDaS, Autoencoder (P5), TensorFlow LSTM |
+| Libraries | OpenCV, Torch, TensorFlow, BeautifulSoup, Pandas |
+| Visualization | Chart.js, Bootstrap Tables |
+
+---
+
+## 🧰 Example API Endpoints
+
+### 📸 Pepper Image Upload
+```bash
+POST /upload
+Content-Type: multipart/form-data
+```
+Uploads an image and returns detected maturity levels (P1–P5).
+
+---
+
+### 💠 Disease Detection
+```bash
+POST /disease
+Content-Type: multipart/form-data
+```
+Returns predicted disease and confidence.
+
+---
+
+### 📊 Pepper Price Forecast
+```bash
+POST /pepper-price
+Content-Type: application/json
+
+{
+  "dateFrom": "2018-01-01",
+  "dateTo": "2025-10-13",
+  "horizon": 7,
+  "seqLen": 30,
+  "marketFilter": "",
+  "epochs": 40,
+  "batchSize": 32,
+  "testSplit": 0.2,
+  "minDays": 200
+}
+```
+
+**Response:**
+```json
+{
+  "summary": {
+    "last_price": 695.0,
+    "avg_future": 681.2,
+    "pct_change": -1.98,
+    "recommendation": "HOLD (sideways)"
+  },
+  "metrics": {"MAE": 11.27, "RMSE": 16.26},
+  "predictions": [
+    {"Date": "2025-10-14", "PredictedPrice": 677.5},
+    {"Date": "2025-10-15", "PredictedPrice": 679.5}
+  ]
+}
+```
+
+---
+
+## 📈 UI Highlights
+
+- Responsive UI built with **Bootstrap 5**
+- Clean data tables and summary cards
+- Interactive chart for pepper price trends
+- Real-time feedback and progress indicators
+
+---
+
+## 🧪 Example Workflow
+
+1. Upload pepper image → get maturity classification (P1–P5).  
+2. Predict pepper diseases if any.  
+3. Use the price prediction form to forecast next-week prices.  
+4. View actionable recommendation (Buy / Sell / Hold).  
+
+---
+
+## 🧑‍💻 Developers
+
+- **AI & Backend**: Python, TensorFlow, PyTorch, Flask  
+- **Frontend**: Angular, Bootstrap, Chart.js  
+- **Integration**: REST APIs, JSON, Reactive Forms  
+
+---
+
+## 📜 License
+
+This project is open-source and available for educational and research purposes.
+
+---
+
+### 🔗 Resources
+
+- [📦 Download Pre-trained Models (Google Drive)](https://drive.google.com/drive/folders/1GXd1wI6CuSky2f_0qecLd4xyl2YOuIMj?usp=drive_link)
+- [💡 YOLOv8 Docs](https://docs.ultralytics.com)
+- [📘 MiDaS Depth Estimation](https://github.com/isl-org/MiDaS)
+- [📙 TensorFlow Keras API](https://www.tensorflow.org/api_docs/python/tf/keras)
+
+---
+
+**🌿 Pepper Maturity Detection**  
+_An AI-driven approach for precision agriculture and market intelligence._
