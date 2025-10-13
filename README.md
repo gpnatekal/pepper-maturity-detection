@@ -12,17 +12,14 @@ This project combines **computer vision (YOLO + MiDaS)**, **autoencoders**, and 
 pepper-maturity-detection/
 │
 ├── angular/                # Frontend (Angular application)
+|   |── public/
 │   ├── src/
 │   ├── package.json
 │   └── angular.json
-;; │git reset --mixed HEAD~2
-
 ├── python/                 # Backend (Python + AI Models)
 │   ├── main.py             # Main backend entry point
-│   ├── main2.py            # Flask API (YOLO, MiDaS, LSTM)
-│   ├── pepper_lstm_scraper_recommender.py
 │   ├── requirements.txt
-│   └── models/             # Place downloaded model files here
+│   └──                     # Place downloaded model files here
 │
 └── README.md
 ```
