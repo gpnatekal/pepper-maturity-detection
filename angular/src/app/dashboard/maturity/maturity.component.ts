@@ -2,6 +2,12 @@ import { Component } from '@angular/core';
 import { LoginService } from '../../services/login.service';
 import { HttpClient } from '@angular/common/http';
 
+interface Detection {
+  harvest_recommendation: string;
+  percentage: number;
+  text:string;
+}
+
 @Component({
   selector: 'app-maturity',
   standalone: false,
@@ -12,7 +18,7 @@ export class MaturityComponent {
   
   selectedFile: File | null = null;
   results: any = null;
-  detections = [];
+  detections: Detection[] = [];
   isLoading = false;
   constructor(
     private http: HttpClient,
@@ -27,6 +33,7 @@ export class MaturityComponent {
 
   uploadImage(): void {
     if (!this.selectedFile) return;
+    this.results = null;
     this.isLoading = true;
     const formData = new FormData();
     formData.append('image', this.selectedFile);

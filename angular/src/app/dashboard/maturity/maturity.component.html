@@ -1,29 +1,36 @@
-
 <div class="container pt-4">
-    <h2 class="mb-4 text-center">Maturity Detection</h2>
-    <div class="upload-section mb-4 d-flex gap-3 align-items-end">
-      <div class="flex-grow-1">
-        <label for="imageUpload">Upload Image</label>
-        <input class="form-control" name="imageUpload" id="imageUpload" type="file" accept="image/*" (change)="onFileSelected($event)" />
-      </div>
-      <button (click)="uploadImage()" class="btn btn-primary" [disabled]="!selectedFile">Process Image</button>
+  <h2 class="mb-4 text-center text-primary">Maturity Detection</h2>
+  <div class="upload-section mb-4 d-flex gap-3 align-items-end">
+    <div class="flex-grow-1">
+      <label for="imageUpload">Upload Image</label>
+      <input class="form-control" name="imageUpload" id="imageUpload" type="file" accept="image/*"
+        (change)="onFileSelected($event)" />
     </div>
-    <div *ngIf="isLoading" class="d-flex align-items-center justify-content-center mb-4">
-  <div class="spinner-border text-primary"  style="width: 3rem; height: 3rem;" role="status">
-    <span class="visually-hidden">Loading...</span>
+    <button (click)="uploadImage()" class="btn btn-primary" [disabled]="!selectedFile">Process Image</button>
   </div>
+  <div *ngIf="isLoading" class="d-flex align-items-center justify-content-center mb-4">
+    <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+      <span class="visually-hidden">Loading...</span>
     </div>
-    <div class="results row" *ngIf="results">
-      <div class="col-md-6 image-container">
-        <h4 class="mb-3">Original Image with Annotations</h4>
-        <img [src]="results.original" class="img-fluid mb-4" alt="Original Image" />
-      </div>
-      <div class="col-md-6 image-container">
-        <h4 class="mb-3">Depth Map</h4>
-        <img [src]="results.depth" class="img-fluid mb-3" alt="Depth Map" />
-        <div *ngIf="detections && detections.length > 0">
-          <p *ngFor="let item of detections">{{item}}</p>
+  </div>
+  <div class="results row" *ngIf="results">
+    <div class="col-md-6 image-container">
+      <h4 class="mb-3">Original Image with Annotations</h4>
+      <img [src]="results.original" class="img-fluid mb-4" alt="Original Image" />
+    </div>
+    <div class="col-md-6 image-container">
+      <h4 class="mb-3">Depth Map</h4>
+      <img [src]="results.depth" class="img-fluid mb-3" alt="Depth Map" />
+      <p class="mb-1"><strong>Overall Percentage: </strong>{{results.percentage}}</p>
+      <p class="mb-3"><strong>Overall Harvest Recommendation: </strong>{{results.harvest_recommendation}}</p>
+      <h4 class="mb-2">Detections</h4>
+      <div *ngIf="detections && detections.length > 0">
+        <div *ngFor="let item of detections" class="mb-2 border border-primary p-3">
+          <p><strong>Harvest Recommendation: </strong>{{item.harvest_recommendation}}</p>
+          <p><strong>Percentage: </strong>{{item.percentage}}</p>
+          <p><strong>Text: </strong>{{item.text}}</p>
         </div>
       </div>
     </div>
   </div>
+</div>

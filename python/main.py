@@ -241,6 +241,8 @@ def process_image():
                 'original': f'data:image/png;base64,{original_base64}',
                 'depth': '',
                 'detections': detections,
+                'percentage': 100.0,
+                'harvest_recommendation': "Ready to harvest",
                 'debug': debug
             })
 
@@ -255,6 +257,8 @@ def process_image():
                 'original': f'data:image/png;base64,{img_to_base64(img_bgr)}',
                 'depth': '',
                 'detections': ["No pepper detected"],
+                'percentage': 0.0,
+                'harvest_recommendation': "Not ready for harvest",
                 'debug': debug
             })
 
@@ -275,6 +279,8 @@ def process_image():
         depth_vis = cv2.applyColorMap(depth_vis, cv2.COLORMAP_MAGMA)
 
         detections = []
+        percentages = []
+
         for box in boxes:
             x1, y1, x2, y2 = map(int, box)
             cx, cy = (x1 + x2) // 2, (y1 + y2) // 2
@@ -284,25 +290,59 @@ def process_image():
             depth_values = prediction[mask == 1]
             if depth_values.size == 0:
                 median_depth = float(np.nan)
+                percentage = 0.0
             else:
                 median_depth = float(np.median(depth_values))
+                # ----- NEW: calculate percentage -----
+                standard_depth = 734.0
+                percentage = min(max((median_depth / standard_depth) * 100, 0), 100)
+
+            # ----- harvest recommendation -----
+            if percentage < 60:
+                harvest = "Not ready for harvest"
+            elif percentage < 85:
+                harvest = "Harvest soon"
+            else:
+                harvest = "Ready to harvest"
+
+            percentages.append(percentage)
+
             category = classify_peppercorn(median_depth) if not np.isnan(median_depth) else "Unknown"
-            detections.append(f"Median depth at ({cx},{cy}): {median_depth:.2f} → Category: {category}")
+            detections.append({
+                "text": f"Median depth at ({cx},{cy}): {median_depth:.2f} → Category: {category}",
+                "percentage": round(percentage, 1),
+                "harvest_recommendation": harvest
+            })
+
             cv2.circle(img_copy_for_vis, (cx, cy), r, (0, 255, 0), 2)
             cv2.putText(img_copy_for_vis, f"{category} ({median_depth:.1f})", (cx - 40, cy - 10),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
             cv2.circle(depth_vis, (cx, cy), r, (0, 255, 0), 2)
-        
+
+        # Average percentage if multiple detected
+        avg_percentage = float(np.mean(percentages)) if percentages else 0.0
+
+        # Overall harvest recommendation based on avg_percentage
+        if avg_percentage < 60:
+            overall_harvest = "Not ready for harvest"
+        elif avg_percentage < 85:
+            overall_harvest = "Harvest soon"
+        else:
+            overall_harvest = "Ready to harvest"
+
         return jsonify({
             'original': f'data:image/png;base64,{img_to_base64(img_copy_for_vis)}',
             'depth': f'data:image/png;base64,{img_to_base64(depth_vis)}',
             'detections': detections,
-            'debug': debug
+            'percentage': round(avg_percentage, 1),
+            'harvest_recommendation': overall_harvest,
+           # 'debug': debug
         })
 
     except Exception as e:
         print("Unexpected error:", e)
         return jsonify({'error': str(e)}), 500
+
 
 
 # Load the trained model once at startup

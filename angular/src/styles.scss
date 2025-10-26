@@ -1,3 +1,17 @@
 /* You can add global styles to this file, and also import other style files */
 @import 'bootstrap/scss/bootstrap';
 @import 'ngx-toastr/toastr';
+
+body {
+    background-image: url('/Black-pepper.webp');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    app-root {
+        min-height: 100vh;
+        display: block;
+        background-color: rgba(255, 255, 255, 0.5);
+    }
+}
+    
