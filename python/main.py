@@ -9,6 +9,7 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing import image
 
 import os
+import json
 
 app = Flask(__name__)
 CORS(app)
@@ -291,7 +292,7 @@ def process_image():
             cv2.putText(img_copy_for_vis, f"{category} ({median_depth:.1f})", (cx - 40, cy - 10),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
             cv2.circle(depth_vis, (cx, cy), r, (0, 255, 0), 2)
-
+        
         return jsonify({
             'original': f'data:image/png;base64,{img_to_base64(img_copy_for_vis)}',
             'depth': f'data:image/png;base64,{img_to_base64(depth_vis)}',
@@ -424,11 +425,19 @@ def aggregate_daily(df: pd.DataFrame, market_filter: str):
         df = df[df["Market"].astype(str).str.contains(market_filter, case=False, na=False)]
         if df.empty:
             raise ValueError(f"No data for market filter '{market_filter}'")
+
+    # Group by date and compute daily mean
     daily = df.groupby("Date", as_index=False)["Price"].mean()
+    daily = daily.sort_values("Date").reset_index(drop=True)
+
+    # Create continuous daily index only within existing range
     idx = pd.date_range(daily["Date"].min(), daily["Date"].max(), freq="D")
     daily = daily.set_index("Date").reindex(idx)
     daily.index.name = "Date"
+
+    # Interpolate only *within* the range — no extrapolation
     daily["Price"] = daily["Price"].interpolate(method="time").ffill().bfill()
+
     return daily.reset_index()
 
 def make_sequences(series: np.ndarray, seq_len: int):
@@ -493,18 +502,26 @@ def train_forecast(daily, horizon, seq_len, epochs, batch_size, test_split, min_
     pred_df = pd.DataFrame({"Date": future_dates, "PredictedPrice": future})
     return pred_df, {"MAE": mae, "RMSE": rmse}
 
-def make_recommendation(daily, pred_df, metrics):
-    last_price = float(daily["Price"].iloc[-1])
+def make_recommendation(df, daily, pred_df, metrics):
+    # Use the last real market price from scraped data
+    last_price = float(df["Price"].iloc[-1])
+
+    # For debugging — shows both
+    # print(f"Actual last price: {last_price}")
+    # print(f"Interpolated last price: {float(daily['Price'].iloc[-1])}")
+
     avg_future = float(pred_df["PredictedPrice"].mean())
     pct_change = ((avg_future - last_price) / last_price) * 100
     rmse = metrics["RMSE"]
     confidence = max(0, 1 - min(rmse / max(daily["Price"].tail(30).mean(), 1), 1))
+
     if pct_change >= 3:
         action = "BUY NOW (expected rise)"
     elif pct_change <= -3:
         action = "WAIT / SELL (expected drop)"
     else:
         action = "HOLD (sideways)"
+
     return {
         "last_price": last_price,
         "avg_future": avg_future,
@@ -543,7 +560,7 @@ def pepper_recommend():
         pred_df, metrics = train_forecast(
             daily, horizon, seq_len, epochs, batch_size, test_split, min_days
         )
-        summary = make_recommendation(daily, pred_df, metrics)
+        summary = make_recommendation(df, daily, pred_df, metrics)
 
         return jsonify({
             "summary": summary,

@@ -18,7 +18,7 @@ export class PriceComponent {
 
   ngOnInit() {
     this.predictionForm = this.fb.group({
-      dateFrom: ['2018-01-01', Validators.required],
+      dateFrom: ['2025-01-01', Validators.required],
       dateTo: [new Date().toISOString().slice(0, 10), Validators.required],
       csvPath: [''],
       horizon: [7, [Validators.required, Validators.min(1)]],
